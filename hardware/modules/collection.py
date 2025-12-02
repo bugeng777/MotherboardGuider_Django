@@ -101,3 +101,39 @@ def get_collection_list(request):
     except Exception as e:
         return HttpResponse(json.dumps({'code': 1, 'data': f'查询失败: {str(e)}'}))
 
+
+@csrf_exempt
+def delete_collection(request):
+    try:
+        body_json = json.loads(request.body)
+        token = body_json.get('token')
+        collection_id = body_json.get('collection_id')
+        
+        if not token:
+            return HttpResponse(json.dumps({'code': 1, 'data': 'token参数不能为空'}))
+        
+        if not collection_id:
+            return HttpResponse(json.dumps({'code': 1, 'data': 'collection_id参数不能为空'}))
+        
+        # 从token中获取user_id
+        try:
+            user_id = token_user_id(token)
+        except jwt.DecodeError:
+            return HttpResponse(json.dumps({'code': 1, 'data': 'token无效或已过期'}))
+        except Exception as e:
+            return HttpResponse(json.dumps({'code': 1, 'data': f'token解析失败: {str(e)}'}))
+        
+        # 查找该收藏，并验证是否属于该用户
+        try:
+            collection = UserCollection.objects.get(id=collection_id, user_id=user_id)
+        except UserCollection.DoesNotExist:
+            return HttpResponse(json.dumps({'code': 1, 'data': '收藏不存在或无权删除'}))
+        
+        # 删除收藏
+        collection.delete()
+        return HttpResponse(json.dumps({'code': 0, 'data': '删除成功!'}))
+    except json.JSONDecodeError:
+        return HttpResponse(json.dumps({'code': 1, 'data': '请求体格式错误，需要JSON格式'}))
+    except Exception as e:
+        return HttpResponse(json.dumps({'code': 1, 'data': f'删除失败: {str(e)}'}))
+
