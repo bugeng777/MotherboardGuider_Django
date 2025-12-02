@@ -14,7 +14,6 @@ class UserInfo(models.Model):
     contact_ad = models.CharField(max_length=50)
     pwd = models.CharField(max_length=32)
 
-
 class CAPTCHA(models.Model):
     contact_ad = models.CharField(max_length=100)
     create_time = models.DateTimeField(auto_now=True)
@@ -26,7 +25,3 @@ class RestCount(models.Model):
     user_id = models.CharField(max_length=100)
     rest_count = models.IntegerField(default=20)
     app_name = models.CharField(max_length=10)
-
-
-class Meta:
-    db_table = 'user_info'

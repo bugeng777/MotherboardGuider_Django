@@ -47,7 +47,7 @@ def register(request):
     except IntegrityError:
         return HttpResponse(json.dumps({'code': 1, 'data': '请求错误，请检查参数'}))
 
-
+@csrf_exempt
 def login_check(request):
     body_json = json.loads(request.body)
     contact_ad = body_json.get('contact_ad')
@@ -66,32 +66,28 @@ def login_check(request):
     except IntegrityError:
         return HttpResponse(json.dumps({'code': 1, 'data': '请求错误，请检查参数'}))
 
-
+@csrf_exempt
 def pwd_miss_email_send(request):
     # 找回密码发送验证码
     try:
         body_json = json.loads(request.body)
         contact_ad = body_json.get('contact_ad')
         app_name = body_json.get('app_name')
-
-        a_c = ProduceCode.ProduceCode.auth_code(option='num')
+        a_c = ProduceCode.auth_code(option='num')
         CAPTCHA.objects.create(
             create_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             contact_ad=contact_ad,
             target_type='ChangePwd',
             code=a_c,
         )
-        print("看看验证码数字:", a_c)
         if not contact_ad:
             return HttpResponse(json.dumps({'code': 1, 'data': '发送失败,请输入邮箱'}))
         email_ad = email_arr[app_name]['email_ad']
-
         email_pwd = email_arr[app_name]['pwd']
         app_name_cn = email_arr[app_name]['app_name_cn']
         now_time = int(time.time())
         con = smtplib.SMTP_SSL('smtp.163.com', 465)
         con.login(email_ad, email_pwd)
-
         msg = MIMEMultipart()
         subject = Header('找回密码', 'utf-8').encode()
         msg['Subject'] = subject
@@ -118,7 +114,7 @@ def pwd_miss_email_send(request):
         return HttpResponse(json.dumps({'code': 1, 'data': '发送失败'}))
         pass
 
-
+@csrf_exempt
 def change_pwd_check(request):
     try:
         body_json = json.loads(request.body)

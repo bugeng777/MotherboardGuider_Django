@@ -17,6 +17,11 @@ email_arr = {
         "email_ad": "chat2mesup@163.com",
         "pwd": "PQEDSGJSMZKKLVCR",
         "app_name_cn": "Great Aussie AI"
+    },
+    "mg":{
+        "email_ad": "chat2mesup@163.com",
+        "pwd": "PQEDSGJSMZKKLVCR",
+        "app_name_cn": "Great Aussie AI"
     }
 }
 
